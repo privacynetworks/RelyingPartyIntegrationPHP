@@ -95,6 +95,11 @@ function generateSessionId()
 // Create the redirect url with the signed token in querystring
 function createRequestForProofToken() {
 
+    $privateKey = randomlySelectPrivateKey();
+    if (!$privateKey || !isset($privateKey['private_key'])) {
+        throw new Exception('Private key not found.');
+    }
+
     $claims = [
         [generateSalt(), "rpid", $__RPID__]
     ];
@@ -107,8 +112,12 @@ function createRequestForProofToken() {
         "_sd" => [hashClaim($claims[0])],
     ];
 
+    $header = [
+        'kid' => $privateKey['kid'], // Key ID
+    ];
+
     // Create signed SD-JWT token
-    $jwt = JWT::encode($payload, randomlySelectPrivateKey()['private_key'], 'ES256', null, $header);
+    $jwt = JWT::encode($payload, $privateKey['private_key'], 'ES256', null, $header);
 
     // Claims to append to the token value
     $claimsPayload = '.'. base64UrlEncode(json_encode($claims));
