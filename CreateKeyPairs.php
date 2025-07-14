@@ -13,12 +13,6 @@
 // Once your new public keys are uploaded to AgeAware, you can start using them to sign your requests for proofs.
 // It is important to disable your old keys in AgeAware so that they can no longer be used to sign requests.
 
-// 1. Configuration: specify EC and the named curve
-$config = [
-    'private_key_type' => OPENSSL_KEYTYPE_EC,
-    'curve_name'       => 'prime256v1',  // also known as secp256r1
-];
-
 // Generate a random UUID v4 string compliant with RFC 4122
 function generate_uuid_v4(): string
 {
@@ -37,6 +31,12 @@ function generate_uuid_v4(): string
 
 // Create key pairs and store them
 function createKeyPairs($quantity = 100) {
+
+    // Configuration: specify EC and the named curve
+    $config = [
+        'private_key_type' => OPENSSL_KEYTYPE_EC,
+        'curve_name'       => 'prime256v1',  // also known as secp256r1
+    ];
 
     $keyPairsArray = [];
     
@@ -87,7 +87,7 @@ function getPublicKeys($keyPairs) {
     foreach ($keyPairs as $keyPair) {
         $publicKeys[] = [
             'kid' => $keyPair['kid'],
-            'public_key' => $keyPair['public_key'],
+            'pem' => $keyPair['public_key'],
         ];
     }
     return $publicKeys;
