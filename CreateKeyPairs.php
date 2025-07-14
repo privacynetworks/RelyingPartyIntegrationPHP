@@ -19,8 +19,21 @@ $config = [
     'curve_name'       => 'prime256v1',  // also known as secp256r1
 ];
 
+// Generate a random UUID v4 string compliant with RFC 4122
+function generate_uuid_v4(): string
+{
+    // Generate 16 bytes (128 bits) of random data
+    $data = random_bytes(16);
 
+    // Set the version to 0100 (version 4)
+    $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
 
+    // Set the variant to 10xx
+    $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
+
+    // Output the 36-character UUID.
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
 
 // Create key pairs and store them
 function createKeyPairs($quantity = 100) {
@@ -48,7 +61,7 @@ function createKeyPairs($quantity = 100) {
         $publicKeyPem = $keyDetails['key'];
 
         $keyPairsArray[] = [
-            'kid' => vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4)),
+            'kid' => generate_uuid_v4(), // Generate a random UUID v4 for the key ID
             'private_key' => $privateKeyPem,
             'public_key'  => $publicKeyPem,
         ];
