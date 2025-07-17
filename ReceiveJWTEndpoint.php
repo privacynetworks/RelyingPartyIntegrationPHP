@@ -46,30 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $jwks = json_decode(file_get_contents($jwksUrl), true);
 
-            // Step 3: Find the matching public key from the JWKS based on the 'kid'
-            $publicKey = null;
-            foreach ($jwks['keys'] as $key) {
-                if ($key['kid'] === $kid) {
-                    // Base64 decode the modulus ('n') and exponent ('e')
-                    $modulus = base64_decode(str_replace(['-', '_'], ['+', '/'], $key['n']));
-                    $exponent = base64_decode(str_replace(['-', '_'], ['+', '/'], $key['e']));
-
-                    // Construct the public key in PEM format
-                    $pem = "-----BEGIN PUBLIC KEY-----\n";
-                    $pem .= chunk_split(base64_encode($modulus), 64, "\n");
-                    $pem .= "-----END PUBLIC KEY-----";
-
-                    $publicKey = $pem;
-                    break;
-                }
-            }
-
-            if (!$publicKey) {
-                throw new Exception('Public key not found.');
-            }
-
             // Decode the JWT token (no verification for now, adjust for your use case)
-            $decoded = JWT::decode($data['verificationPackage']['vp']['token'], JWK::parseKeySet($jwks, 'RS256'));
+            $decoded = JWT::decode($data['verificationPackage']['vp']['token'], JWK::parseKeySet($jwks));
 
             // Extract the 'sid' (your session id reference) from the decoded payload
             $sid = $data['requestToken']['verifiedToken']['payload']['s'];
