@@ -46,6 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $jwks = json_decode(file_get_contents($jwksUrl), true);
 
+            /**
+             * You can add a leeway to account for when there is a clock skew times between
+             * the signing and verifying servers. It is recommended that this leeway should
+             * not be bigger than a few minutes.
+             *
+             * Source: http://self-issued.info/docs/draft-ietf-oauth-json-web-token.html#nbfDef
+             */
+            JWT::$leeway = 60; // $leeway in seconds
+
             // Decode the JWT token (no verification for now, adjust for your use case)
             $decoded = JWT::decode($data['verificationPackage']['vp']['token'], JWK::parseKeySet($jwks));
 
