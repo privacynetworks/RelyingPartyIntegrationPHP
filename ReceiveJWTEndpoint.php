@@ -70,7 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // If the JWT is valid, you can now use the session ID (sid) to manage the user's session
             // As we have now authenticated the token and the user is verified, you can proceed with your application logic
             // For example, you can update the session in your sesssion storage or db for the user to allow access to protected resources
-
+            
+            // Send a success response
+            http_response_code(200);
+            echo json_encode(["message" => "Data saved successfully."]);
 
 
         } catch (Exception $e) {
