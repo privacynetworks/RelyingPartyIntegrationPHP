@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Extract the 'sid' (your session id reference) from the decoded payload
             $sid = $data['requestToken']['verifiedToken']['payload']['s'];
 
-            if($decoded->_error_code) {
+            if(property_exists($decoded, '_error_code')) {
                 http_response_code(400);
                 echo json_encode(["message" => "User not verified."]);
                 exit;
